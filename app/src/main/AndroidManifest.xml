@@ -21,7 +21,7 @@
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.jd.app.android.expensetracker" />
 
-        <activity android:name=".DashboardActivity">
+        <activity android:name=".activity.DashboardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
