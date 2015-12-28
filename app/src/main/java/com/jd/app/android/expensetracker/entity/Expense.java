@@ -3,6 +3,10 @@ package com.jd.app.android.expensetracker.entity;
 import android.content.Context;
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Expense
@@ -12,6 +16,9 @@ import com.orm.SugarRecord;
  * <p/>
  */
 public class Expense extends SugarRecord<Expense> {
+
+    @Ignore
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
     public enum ExpenseType {
         TRAVEL,
@@ -24,9 +31,7 @@ public class Expense extends SugarRecord<Expense> {
         MISCELLANEOUS;
     }
 
-    String date;
-
-    String time;
+    long time;
 
     double price;
 
@@ -34,19 +39,13 @@ public class Expense extends SugarRecord<Expense> {
 
     String expenseTypeMiscellaneous;
 
-    public String getDate() {
-        return date;
-    }
+    String comments;
 
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
@@ -74,14 +73,22 @@ public class Expense extends SugarRecord<Expense> {
         this.expenseTypeMiscellaneous = expenseTypeMiscellaneous;
     }
 
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
     @Override
     public String toString() {
         return "Expense{" +
-                "date='" + date + '\'' +
-                ", time='" + time + '\'' +
+                ", time='" + simpleDateFormat.format(time) + '\'' +
                 ", price=" + price +
                 ", expenseType=" + expenseType +
                 ", expenseTypeMiscellaneous='" + expenseTypeMiscellaneous + '\'' +
-                '}';
+                ", comments='" + comments + '\'' +
+                "} \n";
     }
 }

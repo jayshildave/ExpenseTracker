@@ -1,3 +1,35 @@
 <resources>
     <string name="app_name">Expense Tracker</string>
+    <string name="date_label">Date %1$s</string>
+    <string name="miscellaneous_label">Miscellaneous</string>
+    <string name="price_label">Price</string>
+    <string name="comments_label">Comments (Optional)</string>
+    <string name="expense_type_label">Expense Type</string>
+    <string name="add_expense_title">Add Expense</string>
+    <string name="action_save">Save</string>
+    <string name="price_error_1">Price cannot be empty</string>
+    <string name="price_error_2">Please enter a valid price</string>
+    <string name="miscellaneous_error">Miscellaneous Type is empty or too short. Should be atleast 5 char long</string>
+    <string name="saving_expense_progress">Saving Expense</string>
+    <string name="fetching_expense_progress">Fetching Expense</string>
+    <string name="action_add">Add</string>
+
+    <string-array name="expense_type_array">
+        <item>TRAVEL</item>
+        <item>GROCERY</item>
+        <item>HOTEL</item>
+        <item>MOVIES</item>
+        <item>GIFTS</item>
+        <item>SHOPPING</item>
+        <item>BILLS</item>
+        <item>MISCELLANEOUS</item>
+    </string-array>
+
+    <string name="previous_label">PREV</string>
+    <string name="next_label">NEXT</string>
+    <string name="title_activity_welcome">Summary</string>
+    <string name="price_value">\u20B9 %.2f</string>
+    <string name="miscellaneous_value">MISCELLANEOUS [%1$s]</string>
+
+    <string name="price_detail_text">%.2f</string>
 </resources>

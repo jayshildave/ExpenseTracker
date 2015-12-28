@@ -21,7 +21,13 @@
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.jd.app.android.expensetracker" />
 
-        <activity android:name=".activity.DashboardActivity">
+        <activity
+            android:name=".activity.AddExpenseActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.WelcomeActivity"
+            android:label="@string/title_activity_welcome"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
