@@ -5,7 +5,11 @@ import android.content.Context;
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -90,5 +94,15 @@ public class Expense extends SugarRecord<Expense> {
                 ", expenseTypeMiscellaneous='" + expenseTypeMiscellaneous + '\'' +
                 ", comments='" + comments + '\'' +
                 "} \n";
+    }
+
+    public static JSONObject getJSONObject(Expense expense) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("DATE", expense.simpleDateFormat.format(new Date(expense.time)));
+        jsonObject.put("TYPE", expense.expenseType);
+        jsonObject.put("AMOUNT", expense.price);
+        jsonObject.put("TYPE (MISC)", expense.expenseTypeMiscellaneous);
+        jsonObject.put("COMMENTS", expense.comments);
+        return jsonObject;
     }
 }

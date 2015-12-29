@@ -282,7 +282,7 @@ public class AddExpenseActivity extends BaseActivity implements DatePickerDialog
 
         @Override
         protected Expense doInBackground(Long... expenseId) {
-            return Select.from(Expense.class).where("id=" + expenseId[0]).first();
+            return Expense.findById(Expense.class, expenseId[0]);
         }
 
         @Override

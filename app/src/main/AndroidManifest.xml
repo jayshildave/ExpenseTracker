@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jd.app.android.expensetracker">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:name="com.orm.SugarApp"
         android:allowBackup="true"
@@ -16,7 +19,7 @@
             android:value="1" />
         <meta-data
             android:name="QUERY_LOG"
-            android:value="true" />
+            android:value="false" />
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.jd.app.android.expensetracker" />

@@ -32,4 +32,16 @@
     <string name="miscellaneous_value">MISCELLANEOUS [%1$s]</string>
 
     <string name="price_detail_text">%.2f</string>
+    <string name="action_send">Send</string>
+    <string name="file_export_error">No SDCard available, cant write to file</string>
+    <string name="backup_label">Backup_%1$s</string>
+
+    <string name="storage_permission">Require Storage Permission for exporting expenses to SDCard.</string>
+    <string name="storage_permission_declined">Export failed because no storage permission are available.</string>
+    <string name="storage_permission_required">Storage permission are necessary to export expenses to SDCard.</string>
+    <string name="setting_label">Settings</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="send_mail_label">Send mail</string>
+    <string name="email_subject_label">Expenses %1$s</string>
+    <string name="email_content">Hi, Please find your expenses backup attached.</string>
 </resources>

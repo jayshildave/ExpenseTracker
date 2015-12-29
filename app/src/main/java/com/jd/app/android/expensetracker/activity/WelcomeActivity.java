@@ -1,31 +1,50 @@
 package com.jd.app.android.expensetracker.activity;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.jd.app.android.expensetracker.R;
+import com.jd.app.android.expensetracker.entity.Expense;
 import com.jd.app.android.expensetracker.fragment.DayWiseFragment;
 import com.jd.app.android.expensetracker.fragment.WeekWiseFragment;
+import com.jd.app.android.expensetracker.utils.PermissionUtil;
+import com.jd.app.android.expensetracker.utils.Util;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class WelcomeActivity extends AppCompatActivity implements DayWiseFragment.OnDayWiseFragmentInteractionListener {
+public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnDayWiseFragmentInteractionListener {
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     private WeekWiseFragment weekWiseFragment;
     private DayWiseFragment dayWiseFragment;
+    private String[] STORAGE_PERMISSION = {Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,8 +171,95 @@ public class WelcomeActivity extends AppCompatActivity implements DayWiseFragmen
         if (id == R.id.action_add) {
             Intent intent = new Intent(WelcomeActivity.this, AddExpenseActivity.class);
             startActivity(intent);
+        } else if (id == R.id.action_export) {
+            // export to JSON
+            boolean isPermissionAvailable = PermissionUtil.checkAndRequestForPermission(this, getString(R.string.storage_permission), STORAGE_PERMISSION);
+            if (isPermissionAvailable) {
+                FetchAllExpenseAsyncTask fetchAllExpenseAsyncTask = new FetchAllExpenseAsyncTask();
+                fetchAllExpenseAsyncTask.execute();
+            }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    class FetchAllExpenseAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... args) {
+            List<Expense> expenseList = Expense.listAll(Expense.class);
+            createFiles(expenseList);
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgress(getString(R.string.fetching_expense_progress));
+        }
+
+        @Override
+        protected void onPostExecute(Void args) {
+            super.onPostExecute(args);
+            dismissProgress();
+        }
+    }
+
+    void createFiles(List<Expense> expenseList) {
+        if (!Util.isExternalStorageWritable()) {
+            Toast.makeText(this, R.string.file_export_error, Toast.LENGTH_LONG).show();
+            return;
+        }
+        SimpleDateFormat tempSimpleDateFormat = new SimpleDateFormat("dd_MM_yyyy_hh:mm:ss", Locale.getDefault());
+        String backupLabel = tempSimpleDateFormat.format(new Date());
+        backupLabel = getString(R.string.backup_label, backupLabel);
+        File directory = Util.getDocumentStorageDir(this, backupLabel);
+        JSONArray jsonArray = new JSONArray();
+        for (Expense expense:expenseList) {
+            try {
+                jsonArray.put(Expense.getJSONObject(expense));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        File file = new File(directory, "backup.txt");
+        try {
+
+            PrintWriter out = new PrintWriter(file);
+            out.println(jsonArray.toString());
+            out.close();
+            // Tell the media scanner about the new file so that it is
+            // immediately available to the user.
+            MediaScannerConnection.scanFile(this,
+                    new String[]{file.toString()}, null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        public void onScanCompleted(String path, Uri uri) {
+                            String subject = getString(R.string.email_subject_label, simpleDateFormat.format(new Date()));
+                            String mail = getString(R.string.email_content);
+                            Util.email(WelcomeActivity.this, subject, mail, path);
+                        }
+                    });
+        } catch (IOException e) {
+            // Unable to create file, likely because external storage is
+            // not currently mounted.
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean isPermissionAvailable = PermissionUtil.isPermissionProvided(requestCode, permissions, grantResults);
+        if (isPermissionAvailable) {
+            FetchAllExpenseAsyncTask fetchAllExpenseAsyncTask = new FetchAllExpenseAsyncTask();
+            fetchAllExpenseAsyncTask.execute();
+        } else {
+            DialogInterface.OnClickListener negativeButtonOnClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(WelcomeActivity.this, R.string.storage_permission_declined, Toast.LENGTH_LONG).show();
+                }
+            };
+            PermissionUtil.showPermissionErrorDialog(this, getString(R.string.storage_permission_required), getString(R.string.setting_label), getString(R.string.cancel_label), negativeButtonOnClickListener, getPackageName());
+        }
     }
 }
