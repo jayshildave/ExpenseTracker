@@ -44,6 +44,9 @@ public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnD
     private DayWiseFragment dayWiseFragment;
     private String[] STORAGE_PERMISSION = {Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private ViewPager viewPager;
+    private SectionsPagerAdapter sectionsPagerAdapter;
+    static final int REQUEST_EMAIL_CODE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +61,11 @@ public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnD
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 
         // Set up the ViewPager with the sections adapter.
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.container);
+        viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setAdapter(sectionsPagerAdapter);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -177,6 +180,8 @@ public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnD
                 FetchAllExpenseAsyncTask fetchAllExpenseAsyncTask = new FetchAllExpenseAsyncTask();
                 fetchAllExpenseAsyncTask.execute();
             }
+        } else if (id == R.id.action_delete) {
+            deleteAllExpenses();
         }
 
         return super.onOptionsItemSelected(item);
@@ -235,13 +240,25 @@ public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnD
                         public void onScanCompleted(String path, Uri uri) {
                             String subject = getString(R.string.email_subject_label, simpleDateFormat.format(new Date()));
                             String mail = getString(R.string.email_content);
-                            Util.email(WelcomeActivity.this, subject, mail, path);
+                            Util.email(WelcomeActivity.this, subject, mail, path, REQUEST_EMAIL_CODE);
                         }
                     });
         } catch (IOException e) {
             // Unable to create file, likely because external storage is
             // not currently mounted.
         }
+    }
+
+    void deleteAllExpenses() {
+        DialogInterface.OnClickListener positiveButtonListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Expense.deleteAll(Expense.class);
+                viewPager.setCurrentItem(0);
+            }
+        };
+
+        Util.showConfirmationDialog(this, getString(R.string.delete_expenses_message), getString(R.string.delete_label), getString(R.string.cancel_label), positiveButtonListener);
     }
 
     @Override
@@ -260,5 +277,18 @@ public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnD
             };
             PermissionUtil.showPermissionErrorDialog(this, getString(R.string.storage_permission_required), getString(R.string.setting_label), getString(R.string.cancel_label), negativeButtonOnClickListener, getPackageName());
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_EMAIL_CODE){
+            if(resultCode == RESULT_OK){
+                // Mail was sent.
+                deleteAllExpenses();
+            } else if(resultCode == RESULT_CANCELED) {
+                // Sending was cancelled.
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -1,5 +1,6 @@
 package com.jd.app.android.expensetracker.activity;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.design.widget.TextInputLayout;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.jd.app.android.expensetracker.R;
 import com.jd.app.android.expensetracker.entity.Expense;
+import com.jd.app.android.expensetracker.utils.Util;
 import com.orm.query.Select;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
@@ -45,6 +47,7 @@ public class AddExpenseActivity extends BaseActivity implements DatePickerDialog
 
     EditText miscellaneousTypeEditText;
     private long expenseId = -1L;
+    private Expense expense;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +145,9 @@ public class AddExpenseActivity extends BaseActivity implements DatePickerDialog
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_expense_menu, menu);
+        if (expenseId < 0) {
+            menu.getItem(1).setEnabled(false);
+        }
         return true;
     }
 
@@ -152,9 +158,23 @@ public class AddExpenseActivity extends BaseActivity implements DatePickerDialog
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
             saveExpenseObject();
+        } else if (id == R.id.action_delete) {
+            deleteAllExpenses();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    void deleteAllExpenses() {
+        DialogInterface.OnClickListener positiveButtonListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                expense.delete();
+                finish();
+            }
+        };
+
+        Util.showConfirmationDialog(this, getString(R.string.delete_expense_message), getString(R.string.delete_label), getString(R.string.cancel_label), positiveButtonListener);
     }
 
     void saveExpenseObject() {
@@ -295,6 +315,7 @@ public class AddExpenseActivity extends BaseActivity implements DatePickerDialog
         protected void onPostExecute(Expense expense) {
             super.onPostExecute(expense);
             dismissProgress();
+            AddExpenseActivity.this.expense = expense;
             fillValues(expense);
         }
     }

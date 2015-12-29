@@ -1,9 +1,13 @@
 package com.jd.app.android.expensetracker.utils;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.jd.app.android.expensetracker.R;
@@ -42,7 +46,7 @@ public class Util {
         return file;
     }
 
-    public static void email(Context context, String subject, String emailText, String file) {
+    public static void email(Activity activity, String subject, String emailText, String file, int requestCode) {
         //need to "send multiple" to get more than one attachment
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         emailIntent.setType("text/plain");
@@ -54,6 +58,23 @@ public class Util {
         Uri u = Uri.fromFile(fileIn);
         uris.add(u);
         emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-        context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.send_mail_label)));
+        activity.startActivityForResult(Intent.createChooser(emailIntent, activity.getString(R.string.send_mail_label)), requestCode);
+    }
+
+    public static void showConfirmationDialog(final Activity activity, final String message, final String positiveButton, final String negativeButton, DialogInterface.OnClickListener positiveButtonListener) {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+        alertDialogBuilder.setMessage(message);
+
+
+        alertDialogBuilder.setPositiveButton(positiveButton, positiveButtonListener);
+
+        alertDialogBuilder.setNegativeButton(negativeButton, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+            }
+        });
+
+
+        alertDialogBuilder.show();
     }
 }

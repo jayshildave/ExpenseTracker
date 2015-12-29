@@ -44,4 +44,8 @@
     <string name="send_mail_label">Send mail</string>
     <string name="email_subject_label">Expenses %1$s</string>
     <string name="email_content">Hi, Please find your expenses backup attached.</string>
+    <string name="action_delete">Delete</string>
+    <string name="delete_expenses_message">Are you sure you want to clear all expenses?</string>
+    <string name="delete_expense_message">Are you sure you want to delete the expense?</string>
+    <string name="delete_label">Delete</string>
 </resources>
