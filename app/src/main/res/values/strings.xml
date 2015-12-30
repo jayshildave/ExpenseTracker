@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Expense Tracker</string>
+    <string name="app_name">Expenses</string>
     <string name="date_label">Date %1$s</string>
     <string name="miscellaneous_label">Miscellaneous</string>
     <string name="price_label">Price</string>

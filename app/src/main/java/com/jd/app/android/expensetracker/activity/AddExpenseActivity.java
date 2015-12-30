@@ -146,7 +146,7 @@ public class AddExpenseActivity extends BaseActivity implements DatePickerDialog
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_expense_menu, menu);
         if (expenseId < 0) {
-            menu.getItem(1).setEnabled(false);
+            menu.getItem(1).setVisible(false);
         }
         return true;
     }

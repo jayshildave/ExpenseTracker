@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -219,7 +220,7 @@ public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnD
         backupLabel = getString(R.string.backup_label, backupLabel);
         File directory = Util.getDocumentStorageDir(this, backupLabel);
         JSONArray jsonArray = new JSONArray();
-        for (Expense expense:expenseList) {
+        for (Expense expense : expenseList) {
             try {
                 jsonArray.put(Expense.getJSONObject(expense));
             } catch (JSONException e) {
@@ -281,13 +282,8 @@ public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnD
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_EMAIL_CODE){
-            if(resultCode == RESULT_OK){
-                // Mail was sent.
-                deleteAllExpenses();
-            } else if(resultCode == RESULT_CANCELED) {
-                // Sending was cancelled.
-            }
+        if (requestCode == REQUEST_EMAIL_CODE) {
+            deleteAllExpenses();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

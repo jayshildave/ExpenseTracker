@@ -7,14 +7,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.Settings;
-import android.util.Log;
+import android.text.Html;
 
 import com.jd.app.android.expensetracker.R;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Util {
 
@@ -51,7 +49,9 @@ public class Util {
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         emailIntent.setType("text/plain");
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        emailIntent.putExtra(Intent.EXTRA_TEXT, emailText);
+        ArrayList<String> list = new ArrayList<String>();
+        list.add(Html.fromHtml(emailText).toString());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, list);
         //has to be an ArrayList
         ArrayList<Uri> uris = new ArrayList<Uri>();
         File fileIn = new File(file);
