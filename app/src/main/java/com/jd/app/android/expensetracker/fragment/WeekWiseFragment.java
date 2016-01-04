@@ -162,7 +162,7 @@ public class WeekWiseFragment extends BaseFragment {
 
             List<DailyExpense> dailyExpenseList = new ArrayList<>();
             List<Expense> expenseList = Select.from(Expense.class).where(Condition.prop("time").gt(time[0]-1),
-                    Condition.prop("time").lt(time[1]+1)).list();
+                    Condition.prop("time").lt(time[1]+1)).orderBy("time DESC").list();
 
             DailyExpense dailyExpense = null;
             double dailyPrice = 0.0d;
