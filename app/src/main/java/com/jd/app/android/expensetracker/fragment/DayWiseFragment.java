@@ -95,7 +95,9 @@ public class DayWiseFragment extends BaseFragment {
 
         nextButton = (Button) fragmentView.findViewById(R.id.next_button);
         nextButton.setTag(R.id.next_button);
-        nextButton.setEnabled(false);
+        if (time == timeReceived) {
+            nextButton.setEnabled(false);
+        }
         nextButton.setOnClickListener(new ButtonClickListener());
 
         updateUI();

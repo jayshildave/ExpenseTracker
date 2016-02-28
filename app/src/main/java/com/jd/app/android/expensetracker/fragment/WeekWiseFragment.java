@@ -104,7 +104,9 @@ public class WeekWiseFragment extends BaseFragment {
 
         nextButton = (Button) fragmentView.findViewById(R.id.next_button);
         nextButton.setTag(R.id.next_button);
-        nextButton.setEnabled(false);
+        if (endTime == endTimeReceived) {
+            nextButton.setEnabled(false);
+        }
         nextButton.setOnClickListener(new ButtonClickListener());
 
         updateUI();
