@@ -38,7 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnDayWiseFragmentInteractionListener {
+public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnDayWiseFragmentInteractionListener, WeekWiseFragment.OnWeekWiseFragmentInteractionListener {
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     private WeekWiseFragment weekWiseFragment;
@@ -93,6 +93,16 @@ public class WelcomeActivity extends BaseActivity implements DayWiseFragment.OnD
         Intent intent = new Intent(WelcomeActivity.this, AddExpenseActivity.class);
         intent.putExtra("expenseId", expenseId);
         startActivity(intent);
+    }
+
+    @Override
+    public void onDayClicked(String date) {
+        try {
+            dayWiseFragment.setTime(simpleDateFormat.parse(date).getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        viewPager.setCurrentItem(0, true);
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

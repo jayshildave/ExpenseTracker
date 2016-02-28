@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -54,6 +55,8 @@ public class WeekWiseFragment extends BaseFragment {
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
+    OnWeekWiseFragmentInteractionListener onWeekWiseFragmentInteractionListener;
+
     public WeekWiseFragment() {
         // Required empty public constructor
     }
@@ -92,6 +95,7 @@ public class WeekWiseFragment extends BaseFragment {
         weekExpenseListView = (ListView) fragmentView.findViewById(R.id.expense_list);
         weekAdapter = new WeekAdapter();
         weekExpenseListView.setAdapter(weekAdapter);
+        weekExpenseListView.setOnItemClickListener(new DayClicked());
 
         FetchExpenseAsyncTask fetchExpenseAsyncTask = new FetchExpenseAsyncTask();
         fetchExpenseAsyncTask.execute(startTime, endTime);
@@ -115,6 +119,12 @@ public class WeekWiseFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        try {
+            onWeekWiseFragmentInteractionListener = (OnWeekWiseFragmentInteractionListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement onWeekWiseFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -238,7 +248,22 @@ public class WeekWiseFragment extends BaseFragment {
 
             date.setText(expense.getDate());
 
+            convertView.setTag(expense);
+
             return convertView;
         }
+    }
+
+    class DayClicked implements AdapterView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            DailyExpense expense = (DailyExpense) view.getTag();
+            onWeekWiseFragmentInteractionListener.onDayClicked(expense.getDate());
+        }
+    }
+
+    public interface OnWeekWiseFragmentInteractionListener {
+        void onDayClicked(String date);
     }
 }

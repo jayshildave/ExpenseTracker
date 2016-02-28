@@ -3,6 +3,7 @@ package com.jd.app.android.expensetracker.fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,8 @@ public class DayWiseFragment extends BaseFragment {
     Button nextButton;
 
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-    private OnDayWiseFragmentInteractionListener onDayWiseFragmentInteractionListener;
+
+    OnDayWiseFragmentInteractionListener onDayWiseFragmentInteractionListener;
 
     public DayWiseFragment() {
         // Required empty public constructor
@@ -69,16 +71,22 @@ public class DayWiseFragment extends BaseFragment {
         }
     }
 
+    public void setTime(long time) {
+        this.time = time;
+        FetchExpenseAsyncTask fetchExpenseAsyncTask = new FetchExpenseAsyncTask();
+        fetchExpenseAsyncTask.execute(time);
+        updateUI();
+        if (time == timeReceived) {
+            nextButton.setEnabled(false);
+        } else {
+            nextButton.setEnabled(true);
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_day_wise, container, false);
-        return fragmentView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         dayExpenseListView = (ListView) fragmentView.findViewById(R.id.expense_list);
         dayAdapter = new DayAdapter();
         dayExpenseListView.setAdapter(dayAdapter);
@@ -100,6 +108,13 @@ public class DayWiseFragment extends BaseFragment {
         }
         nextButton.setOnClickListener(new ButtonClickListener());
 
+        return fragmentView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
         updateUI();
     }
 
@@ -107,7 +122,7 @@ public class DayWiseFragment extends BaseFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            onDayWiseFragmentInteractionListener = (OnDayWiseFragmentInteractionListener ) context;
+            onDayWiseFragmentInteractionListener = (OnDayWiseFragmentInteractionListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
                     + " must implement OnDayWiseFragmentInteractionListener");
